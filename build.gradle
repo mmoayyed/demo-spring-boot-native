@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.0'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.graalvm.buildtools.native' version '0.9.19'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations.all {
+    exclude(group: "org.apache.logging.log4j", module: "log4j-api")
+    exclude(group: "org.apache.logging.log4j", module: "log4j-jakarta-web")
+    exclude(group: "org.apache.logging.log4j", module: "log4j-web")
+    exclude(group: "org.apache.logging.log4j", module: "log4j-jcl")
+    exclude(group: "org.apache.logging.log4j", module: "log4j-slf4j-impl")
+    exclude(group: "org.apache.logging.log4j", module: "log4j-slf4j2-impl")
+    exclude(group: "org.apereo.cas", module: "cas-server-core-logging")
+    exclude(group: "org.springframework.boot", module: "spring-boot-devtools")
+}
+
+graalvmNative {
+    metadataRepository {
+        enabled = true
+        version = "0.2.5"
+    }
+
+    toolchainDetection = false
+    binaries {
+        main {
+            imageName = "cas"
+
+            debug = true
+            verbose = false
+            richOutput = true
+
+            buildArgs.add('-H:+ReportExceptionStackTraces')
+            buildArgs.add('--trace-class-initialization=org.hibernate.internal.util.ReflectHelper')
+            buildArgs.add('--initialize-at-build-time=org.hibernate.internal.util.ReflectHelper')
+        }
+    }
+}
+
+springBoot {
+    buildInfo()
+    mainClass = "org.apereo.cas.CasNativeApplication"
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    implementation "org.apereo.cas:cas-server-core-authentication-api:7.0.0-SNAPSHOT"
+}
+
