@@ -1,4 +1,4 @@
-## Spring Boot 3 GraalVM Gradle Demo
+# Spring Boot 3 GraalVM Gradle Demo
              
 You need the following:
 
