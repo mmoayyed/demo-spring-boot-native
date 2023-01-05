@@ -29,7 +29,7 @@ dependencies {
 ```
     
 The new dependency contains no auto-configuration classes. Run the build again,
-and while it completes successfully, AOT sources are fully generated and the native app
+and while it completes successfully, AOT sources are NOT fully generated and the native app
 fails to launch, complaining about a missing servlet factory.
                                                    
 ```bash
