@@ -1,7 +1,6 @@
 spring:
+  main:
+    lazy-initialization: false
   cloud:
-    config:
-      import-check:
-        enabled: false
-server:
-  port: 8089
+    refresh:
+      enabled: true

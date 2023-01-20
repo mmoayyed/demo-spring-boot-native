@@ -1,9 +1,16 @@
 package org.apereo.cas;
 
+import org.apereo.cas.services.ServiceRegistry;
+import org.apereo.cas.services.ServiceRegistryExecutionPlanConfigurer;
+
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.lang.reflect.Member;
 
 public class MyRuntimeHints implements RuntimeHintsRegistrar {
     public MyRuntimeHints() {
@@ -11,27 +18,40 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
 
     @Override
     public void registerHints(final RuntimeHints hints, final ClassLoader classLoader) {
-        hints.reflection()
-            .registerType(TypeReference.of("org.apereo.cas.context.CasApplicationContextInitializer"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+        hints.resources().registerType(org.apereo.cas.util.CasVersion.class);
 
-            .registerType(TypeReference.of("org.springframework.boot.context.properties.migrator.PropertiesMigrationListener"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+        hints.proxies().registerJdkProxy(ServiceRegistry.class);
+        hints.proxies().registerJdkProxy(ServiceRegistryExecutionPlanConfigurer.class);
+        hints.proxies().registerJdkProxy(CorsConfigurationSource.class);
+        
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.persondir.PersonDirectoryAttributeRepositoryPlanConfigurer"));
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.authentication.AuthenticationMetaDataPopulator"));
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.authentication.adaptive.geo.GeoLocationService"));
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.authentication.MultifactorAuthenticationTrigger"));
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.services.ServiceRegistryInitializer"));
 
-            .registerType(TypeReference.of("org.springframework.cloud.util.random.CachedRandomPropertySourceEnvironmentPostProcessor"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.services.ServiceRegistryInitializerEventListener"));
+        hints.proxies().registerJdkProxy(TypeReference.of("org.apereo.cas.services.ServiceRegistryInitializerEventListener"),
+            TypeReference.of("java.io.Serializable"),
+            TypeReference.of("org.springframework.aop.SpringProxy"),
+            TypeReference.of("org.springframework.aop.framework.Advised"),
+            TypeReference.of("org.springframework.core.DecoratingProxy"));
+//        hints.proxies().registerJdkProxy(TypeReference.of("java.io.Serializable"));
+        hints.proxies().registerJdkProxy(InitializingBean.class);
 
-            .registerType(TypeReference.of("org.springframework.cloud.client.HostInfoEnvironmentPostProcessor"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.PSW"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.PSWMS"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.PSAMS"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.SSLA"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.SSLMSW"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.SSLMSA"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.SSMSW"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 
-            .registerType(TypeReference.of("org.springframework.cloud.bootstrap.encrypt.DecryptEnvironmentPostProcessor"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.bootstrap.BootstrapConfigFileApplicationListener"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.bootstrap.LoggingSystemShutdownListener"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.bootstrap.TextEncryptorConfigBootstrapper"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.bootstrap.BootstrapApplicationListener"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.bootstrap.RefreshBootstrapRegistryInitializer"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+        hints.reflection().registerType(TypeReference.of("org.apereo.cas.authentication.principal.resolvers.PersonDirectoryPrincipalResolver"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 
-            .registerType(TypeReference.of("org.springframework.cloud.context.restart.RestartListener"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-
-            .registerType(TypeReference.of("org.springframework.cloud.config.client.ConfigServerConfigDataLoader"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.config.client.ConfigServerConfigDataLocationResolver"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.config.client.ConfigServerConfigDataMissingEnvironmentPostProcessor"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
-            .registerType(TypeReference.of("org.springframework.cloud.config.client.ConfigClientRetryBootstrapper"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("org.apereo.cas.util.cipher.TicketGrantingCookieCipherExecutor"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        hints.reflection().registerType(TypeReference.of("org.apereo.cas.util.cipher.WebflowConversationStateCipherExecutor"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+        
+        hints.reflection().registerType(TypeReference.of("org.codehaus.groovy.runtime.InvokerHelper"));
     }
 }

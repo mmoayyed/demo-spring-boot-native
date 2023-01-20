@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.0'
+    id 'org.springframework.boot' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'org.graalvm.buildtools.native' version '0.9.19'
 }
@@ -27,6 +27,7 @@ configurations.all {
     exclude(group: "org.apache.logging.log4j", module: "log4j-slf4j2-impl")
     exclude(group: "org.apereo.cas", module: "cas-server-core-logging")
     exclude(group: "org.springframework.boot", module: "spring-boot-devtools")
+    exclude(group: "org.springframework.cloud", module: "spring-cloud-starter-bootstrap")
 }
 
 graalvmNative {
@@ -39,7 +40,7 @@ graalvmNative {
     binaries {
         main {
             imageName = "cas"
-
+            quickBuild = false
             debug = true
             verbose = false
             richOutput = true
@@ -47,19 +48,47 @@ graalvmNative {
             buildArgs.add('-H:+ReportExceptionStackTraces')
             buildArgs.add('--trace-class-initialization=org.hibernate.internal.util.ReflectHelper')
             buildArgs.add('--initialize-at-build-time=org.hibernate.internal.util.ReflectHelper')
+            buildArgs.add('--initialize-at-build-time=org.apereo.cas.util.CasVersion')
+            buildArgs.add('--initialize-at-build-time=org.apereo.cas.config.CasPropertiesConfiguration')
         }
     }
 }
 
 springBoot {
     buildInfo()
-    mainClass = "org.apereo.cas.CasNativeApplication"
+    mainClass = "org.apereo.cas.nativex.CasNativeWebApplication"
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    runtimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'
+    runtimeOnly 'org.apache.groovy:groovy'
 
-    implementation "org.apereo.cas:cas-server-core-authentication-api:7.0.0-SNAPSHOT"
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.apereo.cas:cas-server-webapp-native:7.0.0-SNAPSHOT"
+
+    implementation ("org.apereo.cas:cas-server-core:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-audit:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-authentication:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-configuration:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-cookie:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-logout:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-services:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-tickets:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-util:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-validation:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-web:7.0.0-SNAPSHOT")
+    implementation ("org.apereo.cas:cas-server-core-notifications:7.0.0-SNAPSHOT")
+
+    implementation "org.apereo.cas:cas-server-support-person-directory:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-support-themes:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-support-validation:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-support-thymeleaf:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-support-actions:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-support-actions-core:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-support-pm-webflow:7.0.0-SNAPSHOT"
+
+    // implementation "org.apereo.cas:cas-server-webapp-config:7.0.0-SNAPSHOT"
+    // implementation "org.apereo.cas:cas-server-webapp-resources:7.0.0-SNAPSHOT"
+    // implementation "org.apereo.cas:cas-server-webapp-tomcat:7.0.0-SNAPSHOT"
+    // implementation "org.apereo.cas:cas-server-webapp-native:7.0.0-SNAPSHOT"
 }
 
