@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.0.1'
-    id 'io.spring.dependency-management' version '1.1.0'
+    // id 'io.spring.dependency-management' version '1.1.0'
     id 'org.graalvm.buildtools.native' version '0.9.19'
 }
 
@@ -35,7 +35,7 @@ graalvmNative {
         enabled = true
         version = "0.2.5"
     }
-
+    
     toolchainDetection = false
     binaries {
         main {
@@ -44,14 +44,60 @@ graalvmNative {
             debug = true
             verbose = false
             richOutput = true
+//            systemProperties = System.getProperties()
 
+            
             buildArgs.add('-H:+ReportExceptionStackTraces')
-            buildArgs.add('--trace-class-initialization=org.hibernate.internal.util.ReflectHelper')
+            buildArgs.add('-H:+InlineBeforeAnalysis')
+
             buildArgs.add('--initialize-at-build-time=org.hibernate.internal.util.ReflectHelper')
-            buildArgs.add('--initialize-at-build-time=org.apereo.cas.util.CasVersion')
-            buildArgs.add('--initialize-at-build-time=org.apereo.cas.config.CasPropertiesConfiguration')
+
+            buildArgs.add('--initialize-at-build-time=java.beans.Introspector')
+            buildArgs.add('--initialize-at-build-time=com.sun.beans')
+            
+            buildArgs.add('--initialize-at-build-time=groovyjarjarantlr4.v4.runtime')
+            buildArgs.add('--initialize-at-build-time=org.codehaus.groovy')
+            buildArgs.add('--initialize-at-build-time=org.apache.groovy')
+            buildArgs.add('--initialize-at-build-time=groovy.lang')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.utils.LogNode')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.classpath.ClasspathOrder')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.classloaderhandler.ClassLoaderHandlerRegistry')
+//            buildArgs.add('--initialize-at-build-time=io.github.classgraph.ClassGraph')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.fileslice.FileSlice')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.utils.JarUtils')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.utils.FileUtils')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.reflection.ReflectionUtils')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.fastzipfilereader.LogicalZipFile')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.utils.VersionFinder')
+//            buildArgs.add('--initialize-at-build-time=io.github.classgraph.ClassInfoList')
+//            buildArgs.add('--initialize-at-build-time=io.github.classgraph.ModulePathInfo')
+//            buildArgs.add('--initialize-at-build-time=io.github.classgraph.ClassInfo')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph.utils.FastPathResolver')
+//            buildArgs.add('--initialize-at-build-time=io.github.classgraph.ScanResult')
+//            buildArgs.add('--initialize-at-build-time=io.github.classgraph.ModuleReaderProxy')
+//            buildArgs.add('--initialize-at-build-time=nonapi.io.github.classgraph')
+//            buildArgs.add('--initialize-at-build-time=org.thymeleaf.standard.StandardDialect')
+
+            buildArgs.add('--initialize-at-run-time=com.sun.xml.ws,org.codehaus.groovy.control.XStreamUtils,org.codehaus.groovy.vmplugin.v8.Java8\$LookupHolder,groovy.grape.GrapeIvy')
+
+
+//            buildArgs.add('--features=org.apereo.cas.GroovyApplicationRegistrationFeature,org.apereo.cas.GroovyDgmClassesRegistrationFeature')
+//            buildArgs.add('--features=org.apereo.cas.GroovyDgmClassesRegistrationFeature')
         }
     }
+}
+
+
+//sourceSets {
+//    graal {
+//        java {
+//            srcDirs("src/main/graal")
+//        }
+//    }
+//}
+
+configurations {
+    nativeImageClasspath.extendsFrom(graalImplementation)
 }
 
 springBoot {
@@ -60,8 +106,12 @@ springBoot {
 }
 
 dependencies {
-    runtimeOnly 'org.apache.groovy:groovy'
 
+//    graalCompileOnly 'org.graalvm.nativeimage:svm:22.3.1'
+//    graalCompileOnly 'org.graalvm.sdk:graal-sdk:22.3.1'
+//    graalCompileOnly 'io.github.classgraph:classgraph:4.8.154'
+//    nativeImageCompileOnly sourceSets.graal.output.classesDirs
+    
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation "org.apereo.cas:cas-server-webapp-native:7.0.0-SNAPSHOT"
 
@@ -78,6 +128,8 @@ dependencies {
     implementation ("org.apereo.cas:cas-server-core-web:7.0.0-SNAPSHOT")
     implementation ("org.apereo.cas:cas-server-core-notifications:7.0.0-SNAPSHOT")
 
+    runtimeOnly ("org.apereo.cas:cas-server-support-jpa-util:7.0.0-SNAPSHOT")
+
     implementation "org.apereo.cas:cas-server-support-person-directory:7.0.0-SNAPSHOT"
     implementation "org.apereo.cas:cas-server-support-themes:7.0.0-SNAPSHOT"
     implementation "org.apereo.cas:cas-server-support-validation:7.0.0-SNAPSHOT"
@@ -86,9 +138,9 @@ dependencies {
     implementation "org.apereo.cas:cas-server-support-actions-core:7.0.0-SNAPSHOT"
     implementation "org.apereo.cas:cas-server-support-pm-webflow:7.0.0-SNAPSHOT"
 
-    // implementation "org.apereo.cas:cas-server-webapp-config:7.0.0-SNAPSHOT"
-    // implementation "org.apereo.cas:cas-server-webapp-resources:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-webapp-config:7.0.0-SNAPSHOT"
+    implementation "org.apereo.cas:cas-server-webapp-resources:7.0.0-SNAPSHOT"
+
     // implementation "org.apereo.cas:cas-server-webapp-tomcat:7.0.0-SNAPSHOT"
-    // implementation "org.apereo.cas:cas-server-webapp-native:7.0.0-SNAPSHOT"
 }
 
