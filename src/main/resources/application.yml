@@ -1,3 +1,6 @@
+server:
+  ssl:
+    enabled: false
 spring:
   main:
     lazy-initialization: false
