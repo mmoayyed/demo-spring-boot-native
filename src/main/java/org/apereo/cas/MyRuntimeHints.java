@@ -65,6 +65,7 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
         hints.reflection().registerType(TypeReference.of("com.github.benmanes.caffeine.cache.SSMSW"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 
         hints.reflection().registerType(Module.class, MemberCategory.INVOKE_DECLARED_METHODS);
+        hints.reflection().registerType(Class.class, MemberCategory.INVOKE_DECLARED_METHODS);
         hints.reflection().registerType(ModuleLayer.class, MemberCategory.INVOKE_DECLARED_METHODS);
         hints.reflection().registerType(Configuration.class, MemberCategory.INVOKE_DECLARED_METHODS);
         hints.reflection().registerType(ResolvedModule.class, MemberCategory.INVOKE_DECLARED_METHODS);
@@ -157,14 +158,26 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
         hints.reflection().registerType(TypeReference.of( "org.thymeleaf.standard.StandardDialect"),
             MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INTROSPECT_DECLARED_METHODS, MemberCategory.INTROSPECT_PUBLIC_METHODS);
 
+        for (int i = 1; i <= 1500; i++) {
+            var el =  "org.codehaus.groovy.runtime.dgm$" + i;
+            hints.reflection().registerType(TypeReference.of(el),
+                MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+                MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS,
+                MemberCategory.DECLARED_FIELDS, MemberCategory.PUBLIC_FIELDS);
+        }
+
         List.of(
-                "org.codehaus.groovy.runtime.dgm$234",
-                "org.codehaus.groovy.runtime.dgm$237",
-                "org.codehaus.groovy.runtime.dgm$470",
-                "org.codehaus.groovy.runtime.dgm$536",
-                "org.codehaus.groovy.runtime.dgm$560",
+            "org.springframework.webflow.engine.impl.RequestControlContextImpl",
                 "nz.net.ultraq.thymeleaf.layoutdialect.decorators.DecorateProcessor$_doProcess_closure1",
-                "org.thymeleaf.engine.OpenElementTag"
+                "nz.net.ultraq.thymeleaf.layoutdialect.decorators.DecorateProcessor$_doProcess_closure2",
+                "nz.net.ultraq.thymeleaf.layoutdialect.context.extensions.IContextExtensions$_getPrefixForDialect_closure1$_closure2",
+                "nz.net.ultraq.thymeleaf.layoutdialect.context.extensions.IContextExtensions$_getPrefixForDialect_closure1",
+                "nz.net.ultraq.thymeleaf.expressionprocessor.ExpressionProcessor",
+                "org.slf4j.LoggerFactory",
+                "org.thymeleaf.engine.OpenElementTag",
+                "org.thymeleaf.engine.CloseElementTag",
+                "org.thymeleaf.engine.StandardModelFactory",
+                "org.thymeleaf.DialectConfiguration"
             )
             .forEach(el -> {
                 hints.reflection().registerType(TypeReference.of(el),
