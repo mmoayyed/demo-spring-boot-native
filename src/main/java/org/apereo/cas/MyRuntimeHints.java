@@ -100,7 +100,7 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
             "nonapi.io.github.classgraph.classloaderhandler.WeblogicClassLoaderHandler",
             "nonapi.io.github.classgraph.classloaderhandler.WebsphereLibertyClassLoaderHandler",
             "nonapi.io.github.classgraph.classloaderhandler.WebsphereTraditionalClassLoaderHandler").forEach(
-            clazz -> hints.reflection().registerType(TypeReference.of(clazz), MemberCategory.INVOKE_DECLARED_METHODS));
+            clazz -> hints.reflection().registerTypeIfPresent(classLoader, clazz, MemberCategory.INVOKE_DECLARED_METHODS));
 
 
         hints.reflection().registerType(TypeReference.of("nz.net.ultraq.thymeleaf.layoutdialect.decorators.strategies.AppendingStrategy"), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
