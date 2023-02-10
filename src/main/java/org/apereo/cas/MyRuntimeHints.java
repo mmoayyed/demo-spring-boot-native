@@ -152,15 +152,12 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
 //        hints.reflection().registerType(TypeReference.of( "org.thymeleaf.standard.StandardDialect"),
 //            MemberCategory.PUBLIC_FIELDS, MemberCategory.DECLARED_FIELDS);
 
-        StandardDialect a;
-        // StandardDialect.NAME // string
-        // a.getName() // string
         hints.reflection().registerType(TypeReference.of( "org.thymeleaf.standard.StandardDialect"),
             MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS, MemberCategory.INTROSPECT_DECLARED_METHODS, MemberCategory.INTROSPECT_PUBLIC_METHODS);
 
         for (int i = 1; i <= 1500; i++) {
             var el =  "org.codehaus.groovy.runtime.dgm$" + i;
-            hints.reflection().registerType(TypeReference.of(el),
+            hints.reflection().registerTypeIfPresent(classLoader, el,
                 MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
                 MemberCategory.INVOKE_DECLARED_METHODS, MemberCategory.INVOKE_PUBLIC_METHODS,
                 MemberCategory.DECLARED_FIELDS, MemberCategory.PUBLIC_FIELDS);
